@@ -1,9 +1,7 @@
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.WebDriverRunner;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -21,7 +19,6 @@ public class StudentRegistrationFormTest {
     private static final String HOST_URL = "https://demoqa.com/";
     private static final String STUDENT_REGISTRATION_FORM = "automation-practice-form";
     private static final Random RANDOM = new Random();
-
     private static final String monthSelectorByIndex = String.format(".react-datepicker__month-select [value='%s']", (int) (Math.random() * 11));
     private static final String yearSelectorByIndex = String.format(".react-datepicker__year-select [value='%s']", (int) (Math.random() * (2100 - 1900) + 1900));
 
@@ -51,7 +48,7 @@ public class StudentRegistrationFormTest {
         return GENDER;
     }
 
-    public String hobbiesType() {
+    public String hobbiesChoice() {
         switch (HOBBIE_TYPE) {
             case 1:
                 HOBBIE = "[for=hobbies-checkbox-1]";
@@ -73,22 +70,20 @@ public class StudentRegistrationFormTest {
     private String GENDER = genderChoice();
     private final String MOBILE_NUMBER = generateString(NUMBER_SYMBOLS, 10);
     private final int HOBBIE_TYPE = (int) (Math.random() * 3) + 1;
-    private String HOBBIE = hobbiesType();
+    private String HOBBIE = hobbiesChoice();
     private final String ADDRESS = generateString(LATIN_SYMBOLS + NUMBER_SYMBOLS, 300);
 
     @BeforeAll
     static void beforeCondition() {
-        //Configuration.browserSize = "1920x1080";
+        Configuration.browserSize = "1366x768";
         Configuration.pageLoadStrategy = "eager";
-        Configuration.holdBrowserOpen = true;
-
+        Configuration.holdBrowserOpen = false;
+        Configuration.baseUrl = (HOST_URL);
     }
 
     @Test
     void generateRandomUserTest() {
-        // Открываем браузер с конкретным эндпоинтом и разворачиваем на весь экран
-        open(HOST_URL + STUDENT_REGISTRATION_FORM);
-        WebDriverRunner.getWebDriver().manage().window().maximize();
+        open(STUDENT_REGISTRATION_FORM);
         // Убираем лишние элементы со страницы
         executeJavaScript("document.getElementById('close-fixedban').parentNode.remove()");
         executeJavaScript("document.getElementsByTagName('footer')[0].remove()");
@@ -108,7 +103,7 @@ public class StudentRegistrationFormTest {
         $("#subjectsInput").setValue("E"); //TODO: Придумать и подобрать как вводить 1 допустимый символ
         $("#react-select-2-option-2").click(); //TODO: Придумать как выбирать случайный элемент
         $(HOBBIE).click();
-        $("#uploadPicture").uploadFile(new File("src/test/data/Test_file.txt")); //TODO: Добавить автоматическую генерацию файла и его загрузку
+        $("#uploadPicture").uploadFromClasspath("Test_file.txt"); //TODO: Добавить автоматическую генерацию файла и его загрузку
         $("#currentAddress").setValue(ADDRESS);
         $(withText("Select State")).scrollTo();
         $(withText("Select State")).click();
